@@ -1,0 +1,18 @@
+{% extends 'base_testing.html' %}
+
+{% block title %}Energy4u{% endblock %}
+
+{% block content %}
+    <!-- main content -->
+    <h1>Energy4u - Тестування з електробезпеки</h1>
+    <p>
+        Вітаю на головній проекту energy4u!<br>
+        Розробник: <em>Hybr1dTheory</em>
+    </p>
+    <h2>Коротка довідка</h2>
+    <p>
+        На даний момент база даних містить
+        {{ num_questions }} питань для перевірки знань з електробезпеки
+    </p>
+
+{% endblock %}

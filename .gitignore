@@ -1,0 +1,4 @@
+*.pyc
+energy-venv/
+.idea/
+config.py

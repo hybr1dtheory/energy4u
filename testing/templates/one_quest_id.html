@@ -1,0 +1,23 @@
+{% extends 'base_testing.html' %}
+
+{% block title %}Testing questions{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+{% csrf_token %}
+    <fieldset>
+        <legend><h3>{{ question.q_text }}</h3></legend>
+        {% if error_message %}<p class="text-danger">{{ error_message }}</p>{% endif %}
+        {% for var in question.variant_set.all %}
+        <div class="field">
+            <input class="form-check-input" type="checkbox" name="variant{{ var.id }}" id="variant{{ var.id }}" value="{{ var.id }}">
+            <label class="form-check-label my-label" for="variant{{ var.id }}">
+                {{ var.var_text }}
+            </label>
+        </div>
+
+        {% endfor %}
+    </fieldset>
+<button type="submit" class="btn btn-primary">Відправити</button>
+</form>
+{% endblock %}

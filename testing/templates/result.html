@@ -1,0 +1,30 @@
+{% extends 'base_testing.html' %}
+
+{% block title %}Result{% endblock %}
+
+{% block content %}
+<h6 class="display-6"> {{ message }} </h6>
+    <fieldset>
+    <legend><h6>{{ question }}</h6></legend>
+    {% for var in variants %}
+        {% if var.id in choices %}
+        <input class="form-check-input" type="checkbox" id="var{{ var.id }}" value="" checked>
+            {% if var.is_right %}
+            <label class="form-check-label text-success" for="var{{ var.id }}">
+                {{ var.var_text }}
+            </label><br>
+            {% else %}
+            <label class="form-check-label text-danger" for="var{{ var.id }}">
+                {{ var.var_text }}
+            </label><br>
+            {% endif %}
+        {% else %}
+        <input class="form-check-input" type="checkbox" id="variant{{ var.id }}" value="">
+        <label class="form-check-label" for="variant{{ var.id }}">
+            {{ var.var_text }}
+        </label><br>
+        {% endif %}
+    {% endfor %}
+    </fieldset>
+<h6 class="text-danger">Пункт правил: {{ reference }}</h6>
+{% endblock %}
