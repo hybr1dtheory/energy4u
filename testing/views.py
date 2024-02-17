@@ -8,7 +8,7 @@ def index(request):
     """view function for main page of testing app"""
     num_questions = Question.objects.all().count()
     data = {"num_questions": num_questions}
-    return render(request,"index.html", context=data)
+    return render(request, "index.html", context=data)
 
 
 def questions_list(request):
@@ -35,8 +35,28 @@ def questions_list(request):
 def test_result(request):
     """View for getting results of the test from user session
     and to send results to results page"""
-    answers = request.session.get("answers", "none")
-    return render(request, "test_result.html", {"answers": answers})
+    answers = request.session.get("answers", False)  # get selected variants for all questions
+    if answers:
+        # creating data needed to view the result of the test
+        questions_data = []
+        for qid in answers:
+            question = get_object_or_404(Question, pk=int(qid))
+            choices = [int(c) for c in answers[qid]]
+            variants = question.variant_set.all()
+            text = question.q_text
+            ref = question.reference
+            correct = [v.id for v in variants if v.is_right]
+            if correct == choices:
+                mess = "Правильна відповідь!"
+            else:
+                mess = "Нажаль відповідь неправильна або неточна. Скористайтеся посиланням на нормативний акт."
+            q_data = {"choices": choices, "question": text,
+                      "variants": variants, "message": mess, "reference": ref}
+            questions_data.append(q_data)
+
+        return render(request, "test_result.html", {"questions_data": questions_data})
+    else:
+        return HttpResponseForbidden("Ви не відправили відповідь на цей тест.")
 
 
 def one_quest(request):
