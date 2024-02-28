@@ -1,11 +1,5 @@
 from django.contrib import admin
-from .models import User, Testing, Category, Question, Variant
-
-
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'avg_result', 'rating', 'reg_date')
-    list_filter = ('avg_result', 'rating', 'reg_date')
+from .models import Testing, Category, Question, Variant
 
 
 @admin.register(Testing)

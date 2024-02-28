@@ -17,19 +17,28 @@ def questions_list(request):
     if request.method == "POST":
         answers = {}
         for i in range(1, 11):
-            for j in range(1, 10):
-                choice = request.POST.get(f"{i}{j}", False)
-                if choice:
-                    qid, vid = choice.split(":")
-                    choice_list = answers.get(qid, [])
-                    choice_list.append(vid)
-                    answers[qid] = choice_list
-        request.session["answers"] = answers
-        return HttpResponseRedirect("test_result")
+            choice = request.POST.get(f"{i}", False)  # get every user choice from form by name
+            if choice:
+                qid, vid = choice.split(":")
+                answers[qid] = vid
+        if len(answers) < 10:
+            mess = "Необхідно обрати варіант в кожному питанні!"
+            selected = []
+            questions = []
+            for q, v in answers.items():
+                selected.append(int(v))
+                question = Question.objects.get(id=int(q))
+                questions.append(question)
+            return render(request, 'questions.html',
+                          {'questions_list': questions, 'selected': selected, 'error_message': mess})
+        else:
+            request.session["answers"] = answers  # writing answers to user session data
+            return HttpResponseRedirect("test_result")
     else:
-        q_num = randint(1, 90)
+        q_num = randint(1, 30)
         questions = Question.objects.all()[q_num: q_num + 10]
-        return render(request, 'questions.html', {'questions_list': questions})
+        return render(request, 'questions.html',
+                      {'questions_list': questions, 'selected': []})
 
 
 def test_result(request):
@@ -39,29 +48,32 @@ def test_result(request):
     if answers:
         # creating data needed to view the result of the test
         questions_data = []
-        for qid in answers:
-            question = get_object_or_404(Question, pk=int(qid))
-            choices = [int(c) for c in answers[qid]]
+        score = 0
+        for qid, vid in answers.items():
+            question = Question.objects.get(id=int(qid))
+            choice = int(vid)
             variants = question.variant_set.all()
             text = question.q_text
             ref = question.reference
-            correct = [v.id for v in variants if v.is_right]
-            if correct == choices:
+            correct = variants.get(is_right=True).id
+            if correct == choice:
                 mess = "Правильна відповідь!"
+                score += 1
             else:
-                mess = "Нажаль відповідь неправильна або неточна. Скористайтеся посиланням на нормативний акт."
-            q_data = {"choices": choices, "question": text,
+                mess = "Нажаль відповідь неправильна. Скористайтеся посиланням на нормативний акт."
+            q_data = {"choice": choice, "question": text,
                       "variants": variants, "message": mess, "reference": ref}
             questions_data.append(q_data)
-
-        return render(request, "test_result.html", {"questions_data": questions_data})
+        score *= 10
+        return render(request, "test_result.html",
+                      {"questions_data": questions_data, "score": score})
     else:
         return HttpResponseForbidden("Ви не відправили відповідь на цей тест.")
 
 
 def one_quest(request):
     """Redirecting to random question"""
-    qid = randint(1, 85)
+    qid = randint(1, 40)
     return HttpResponseRedirect(f"{qid}")
 
 
@@ -71,15 +83,9 @@ def one_quest_id(request, question_id):
     to send results to the 'result' view."""
     question = get_object_or_404(Question, pk=question_id)
     if request.method == 'POST':
-        variants = [var.id for var in question.variant_set.all()]
-        selected_variants = []
-        for v in variants:
-            choice = request.POST.get(f"variant{v}", False)
-            if choice:
-                selected_variants.append(choice)
-        if selected_variants:
-            request.session["choices"] = selected_variants
-
+        selected_variant = request.POST.get(f"{question_id}", False)
+        if selected_variant:
+            request.session["one_choice"] = selected_variant
             return HttpResponseRedirect("result")
         else:
             return render(request, 'one_quest_id.html',
@@ -90,20 +96,20 @@ def one_quest_id(request, question_id):
 
 def result(request, question_id):
     """This view process choices to show the result"""
-    if request.session.get("choices", False):
+    if request.session.get("one_choice", False):
         question = get_object_or_404(Question, pk=question_id)
         variants = question.variant_set.all()
         text = question.q_text
         ref = question.reference
         correct = [v.id for v in variants if v.is_right]
-        choices = [int(c) for c in request.session["choices"]]  # get selected variants from user request
-        if correct == choices:
+        choice = int(request.session["one_choice"])  # get selected variant from user request
+        if choice in correct:
             mess = "Правильна відповідь!"
         else:
-            mess = "Нажаль відповідь неправильна або неточна. Скористайтеся посиланням на нормативний акт."
-        del request.session["choices"]  # clean choices from session
+            mess = "Нажаль відповідь неправильна. Скористайтеся посиланням на нормативний акт."
+        del request.session["one_choice"]  # clean choice from session
         return render(request, "result.html",
-                      {"choices": choices, "question": text,
+                      {"choice": choice, "question": text,
                        "variants": variants, "message": mess, "reference": ref})
     else:
         return HttpResponseForbidden("Ви не відправили відповідь на це питання")

@@ -5,23 +5,23 @@
 {% block content %}
 <h6 class="display-6"> {{ message }} </h6>
     <fieldset>
-    <legend><h6>{{ question }}</h6></legend>
+    <legend><h5>{{ question }}</h5></legend>
     {% for var in variants %}
-        {% if var.id in choices %}
-        <input class="form-check-input" type="checkbox" id="var{{ var.id }}" value="" checked>
+        {% if var.id == choice %}
+        <input class="form-check-input" type="radio" name="question" id="{{ var.id }}" value="" checked>
             {% if var.is_right %}
-            <label class="form-check-label text-success" for="var{{ var.id }}">
-                {{ var.var_text }}
+            <label class="form-check-label my-label text-success" for="{{ var.id }}">
+                {{ var.var_order }}) {{ var.var_text }}
             </label><br>
             {% else %}
-            <label class="form-check-label text-danger" for="var{{ var.id }}">
-                {{ var.var_text }}
+            <label class="form-check-label my-label text-danger" for="{{ var.id }}">
+                {{ var.var_order }}) {{ var.var_text }}
             </label><br>
             {% endif %}
         {% else %}
-        <input class="form-check-input" type="checkbox" id="variant{{ var.id }}" value="">
-        <label class="form-check-label" for="variant{{ var.id }}">
-            {{ var.var_text }}
+        <input class="form-check-input" type="radio" name="question" id="v{{ var.id }}" value="">
+        <label class="form-check-label my-label" for="v{{ var.id }}">
+            {{ var.var_order }}) {{ var.var_text }}
         </label><br>
         {% endif %}
     {% endfor %}

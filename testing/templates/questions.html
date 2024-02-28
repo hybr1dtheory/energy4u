@@ -8,16 +8,16 @@
 {% if questions_list %}
 <form action="" method="post">
     {% csrf_token %}
+    {% if error_message %}<p class="text-danger">{{ error_message }}</p>{% endif %}
     {% for q in questions_list %}
     <fieldset>
         <legend><h3>{{ q.q_text }}</h3></legend>
-        {% if error_message %}<p class="text-danger">{{ error_message }}</p>{% endif %}
         {% for var in q.variant_set.all %}
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="{{forloop.parentloop.counter}}{{ forloop.counter }}"
+            <input class="form-check-input" type="radio" name="{{forloop.parentloop.counter}}"
                    value="{{ q.id }}:{{ var.id }}" id="{{ var.id }}">
             <label class="form-check-label my-label" for="{{ var.id }}">
-                {{ var.var_text }}
+                {{ var.var_order }}) {{ var.var_text }}
             </label>
         </div>
         {% endfor %}

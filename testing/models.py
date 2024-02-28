@@ -1,15 +1,5 @@
 from django.db import models
-
-
-class User(models.Model):
-    email = models.EmailField()
-    username = models.CharField(max_length=32)
-    reg_date = models.DateField(auto_now_add=True)  # date of user registration
-    avg_result = models.FloatField()  # average result of all tests
-    rating = models.FloatField()  # user rating based of test results and timing
-
-    def __str__(self):
-        return f"{self.username}"
+from django.contrib.auth.models import User
 
 
 # electrical safety qualification groups for grouping questions by complexity
@@ -44,6 +34,7 @@ class Question(models.Model):
 # variants for all questions
 class Variant(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    var_order = models.CharField(max_length=1, null=True)  # entire order of variants for every question
     var_text = models.CharField(max_length=256)
     is_right = models.BooleanField()  # right / wrong variant
 

@@ -3,24 +3,25 @@
 {% block title %}Результат тесту{% endblock %}
 
 {% block content %}
+<h1 class="display-5">Набрана кількість балів: {{ score }}%</h1>
 {% for q in questions_data %}
     <fieldset>
     <legend><h5>{{ q.question }}</h5></legend>
     {% for var in q.variants %}
-        {% if var.id in q.choices %}
-        <input class="form-check-input" type="checkbox" id="var{{ var.id }}" value="" checked>
+        {% if var.id == q.choice %}
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ var.id }}" value="" checked>
             {% if var.is_right %}
-            <label class="form-check-label text-success" for="var{{ var.id }}">
+            <label class="form-check-label text-success my-label" for="{{ var.id }}">
                 {{ var.var_text }}
             </label><br>
             {% else %}
-            <label class="form-check-label text-danger" for="var{{ var.id }}">
+            <label class="form-check-label text-danger my-label" for="{{ var.id }}">
                 {{ var.var_text }}
             </label><br>
             {% endif %}
         {% else %}
-        <input class="form-check-input" type="checkbox" id="variant{{ var.id }}" value="">
-        <label class="form-check-label" for="variant{{ var.id }}">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="v{{ var.id }}" value="">
+        <label class="form-check-label my-label" for="v{{ var.id }}">
             {{ var.var_text }}
         </label><br>
         {% endif %}
