@@ -6,7 +6,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# Django secret key
 SECRET_KEY = ENERGY_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -25,6 +25,9 @@ INSTALLED_APPS = [
     'library.apps.LibraryConfig',
     'testing.apps.TestingConfig',
     'django_bootstrap5',
+    'users.apps.UsersConfig',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -96,3 +99,11 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# set bootstrap5 as and allowed template pack and as the default template pack
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# settings for login page
+LOGIN_REDIRECT_URL = 'index'
+LOGIN_URL = 'login'
