@@ -6,19 +6,22 @@
 <h1>Швидкий тест</h1>
 
 {% if questions_list %}
-<form action="" method="post">
+<form class="needs-validation" action="" method="post" novalidate>
     {% csrf_token %}
     {% if error_message %}<p class="text-danger">{{ error_message }}</p>{% endif %}
     {% for q in questions_list %}
     <fieldset>
-        <legend><h3>{{ q.q_text }}</h3></legend>
+        <legend><h3>{{ forloop.counter }}. {{ q.q_text }}</h3></legend>
         {% for var in q.variant_set.all %}
         <div class="form-check">
             <input class="form-check-input" type="radio" name="{{forloop.parentloop.counter}}"
-                   value="{{ q.id }}:{{ var.id }}" id="{{ var.id }}">
+                   value="{{ q.id }}:{{ var.id }}" id="{{ var.id }}" required>
             <label class="form-check-label my-label" for="{{ var.id }}">
                 {{ var.var_order }}) {{ var.var_text }}
             </label>
+            {% if forloop.last %}
+            <div class="invalid-feedback">Оберіть варіант</div>
+            {% endif %}
         </div>
         {% endfor %}
     </fieldset>

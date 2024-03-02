@@ -35,8 +35,10 @@ def questions_list(request):
             request.session["answers"] = answers  # writing answers to user session data
             return HttpResponseRedirect("test_result")
     else:
-        q_num = randint(1, 30)
-        questions = Question.objects.all()[q_num: q_num + 10]
+        q_ids = set()
+        while len(q_ids) < 10:  # generating 10 random id for questions set
+            q_ids.add(randint(1, 40))
+        questions = Question.objects.filter(id__in=q_ids)
         return render(request, 'questions.html',
                       {'questions_list': questions, 'selected': []})
 
@@ -46,7 +48,7 @@ def test_result(request):
     and to send results to results page"""
     answers = request.session.get("answers", False)  # get selected variants for all questions
     if answers:
-        # creating data needed to view the result of the test
+        # creating data needed to show the result of the test
         questions_data = []
         score = 0
         for qid, vid in answers.items():
