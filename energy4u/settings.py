@@ -2,6 +2,8 @@
 # private settings for django and database
 from config import ENERGY_KEY, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
 from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -107,3 +109,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # settings for login page
 LOGIN_REDIRECT_URL = 'index'
 LOGIN_URL = 'login'
+
+# set directory for profile pictures (and another media files)
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

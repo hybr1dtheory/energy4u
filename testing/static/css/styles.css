@@ -14,7 +14,7 @@
     width: 95%;
 }
 
-body {
+html, body {
     height: 100%;
 }
 
@@ -24,10 +24,17 @@ body {
     flex-direction: column;
 }
 
+.header{
+    padding: 0px;
+    position: sticky;
+    top: 0
+}
+
 .main {
+    padding: 10px;
     flex-grow: 1;
 }
 
 .footer {
-    height: 200px;
+    margin-top: auto;
 }
