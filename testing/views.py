@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponseForbidden
-from .models import Question
+from django.contrib.auth.decorators import login_required
+from .models import Question, Category
 from random import randint
 
 
@@ -115,3 +116,44 @@ def result(request, question_id):
                        "variants": variants, "message": mess, "reference": ref})
     else:
         return HttpResponseForbidden("Ви не відправили відповідь на це питання")
+
+
+def exam_categories(request):
+    """View to show the list of categories and choose the category for exam"""
+    categories = Category.objects.all()
+    return render(request, "exam_categories.html", {"categories": categories})
+
+
+@login_required
+def exam(request, category_id: int):
+    """View gets the category id from url and generates a set of questions
+    for specified category. View also process the data if request is post."""
+    if request.method == "POST":
+        answers = {}
+        for i in range(1, 11):
+            choice = request.POST.get(f"{i}", False)  # get every user choice from form by name
+            if choice:
+                qid, vid = choice.split(":")
+                answers[qid] = vid
+        request.session["exam_answers"] = answers  # writing answers to user session data
+        return HttpResponseRedirect("/exam/result")
+    else:
+        category = get_object_or_404(Category, pk=category_id)
+        questions_set = Question.objects.filter(category_id__lte=category.id)
+        if len(questions_set) > 10:
+            questions = []
+            indexes = set()
+            max_index = len(questions_set) - 1
+            while len(indexes) < 10:
+                indexes.add(randint(0, max_index))
+            for n in indexes:
+                questions.append(questions_set[n])
+        else:
+            questions = questions_set
+        return render(request, 'exam.html',
+                      {'questions_list': questions, 'selected': []})
+
+
+@login_required
+def exam_result(request):
+    pass

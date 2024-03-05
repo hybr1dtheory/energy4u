@@ -11,6 +11,10 @@
           <p class="text-secondary">{{ user.email }}</p>
         </div>
       </div>
+        <ul>
+            <li>Рейтинг: {{ user.profile.rating }}</li>
+            <li>Середній результат: {{ user.profile.avg_result }}</li>
+        </ul>
       <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}
           <fieldset class="form-group">

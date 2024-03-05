@@ -40,3 +40,11 @@ class Variant(models.Model):
 
     def __str__(self):
         return f"{self.var_text}"
+
+
+class TestingQuestion(models.Model):
+    """Model represents table for many-to-many relation between Question and Testing
+    with additional data about choice"""
+    question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
+    testing = models.ForeignKey(Testing, on_delete=models.CASCADE)
+    choice = models.ForeignKey(Variant, on_delete=models.SET_NULL, null=True)
