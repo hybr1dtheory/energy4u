@@ -10,6 +10,7 @@
         <tr>
             <th scope="col">№</th>
             <th scope="col">Дата і час</th>
+            <th scope="col">Категорія</th>
             <th scope="col">Результат, %</th>
             <th scope="col">Час проходження, сек</th>
             <th scope="col">Подробиці</th>
@@ -20,6 +21,7 @@
         <tr>
             <th scope="row">{{ forloop.counter }}</th>
             <td>{{ test.test_datetime }}</td>
+            <td>{{ test.category }}</td>
             <td>{{ test.result }}</td>
             <td>{{ test.test_duration.seconds}}</td>
             <td><a href="/profile/testings/{{ test.id }}">Подробиці</a></td>

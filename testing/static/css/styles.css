@@ -1,13 +1,13 @@
 /* styles for my light theme */
 .light-theme {
-    background-color: #e0a3ff;
+    background-color: #dad890;
     color: #000;
 }
 
 /* styles for my dark theme */
 .dark-theme {
-    background-color: #052922;
-    color: #E8F1EF;
+    background-color: #240038;
+    color: #ffe657;
 }
 
 .my-label {
@@ -46,7 +46,7 @@ html, body {
 
 table {
   border-collapse: collapse;
-  border: 2px solid rgb(140 140 140);
+  border: 2px solid;
   letter-spacing: 1px;
 }
 

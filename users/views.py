@@ -49,3 +49,11 @@ def testing_history(request):
     testings = Testing.objects.filter(user_id=user_id)
     return render(request, 'testing_history.html', {"testings": testings})
 
+
+@login_required
+def testing_details(request, testing_id: int):
+    test_questions = TestingQuestion.objects.filter(testing_id=testing_id)
+    choices = [tq.variant.id for tq in test_questions]
+    test_result = Testing.objects.get(id=testing_id).result
+    return render(request, 'testing_details.html',
+                  {"test_questions": test_questions, "result": test_result, "choices": choices})

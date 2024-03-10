@@ -1,0 +1,37 @@
+{% extends 'base_testing.html' %}
+
+{% block title %}Подробиці екзамену{% endblock %}
+
+{% block content %}
+<h1 class="display-5">Результат екзамену: {{ result }}%</h1>
+{% for tq in test_questions %}
+    <fieldset>
+    <legend><h5>{{ tq.question.q_text }}</h5></legend>
+    {% for var in tq.question.variant_set.all %}
+        {% if var.id in choices %}
+        <input class="form-check-input" type="radio" name="{{ forloop.parentloop.counter }}"
+               id="{{ var.id }}" value="" checked>
+            {% if var.is_right %}
+            <label class="form-check-label text-success my-label" for="{{ var.id }}">
+                {{ var.var_order }}) {{ var.var_text }}
+            </label><br>
+            {% else %}
+            <label class="form-check-label text-danger my-label" for="{{ var.id }}">
+                {{ var.var_order }}) {{ var.var_text }}
+            </label><br>
+            {% endif %}
+        {% else %}
+        <input class="form-check-input" type="radio" name="{{ forloop.parentloop.counter }}"
+               id="v{{ var.id }}" value="" disabled>
+        <label class="form-check-label my-label" for="v{{ var.id }}">
+            {{ var.var_order }}) {{ var.var_text }}
+        </label><br>
+        {% endif %}
+    {% endfor %}
+    </fieldset>
+    <p class="text-center">
+        <u>Пункт правил: {{ tq.question.reference }}</u><br>
+        *****
+    </p>
+{% endfor %}
+{% endblock %}

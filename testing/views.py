@@ -184,7 +184,7 @@ def exam_result(request):
         user_profile = request.user.profile
         avg_res, tests_count = user_profile.avg_result, user_profile.testing_count
         new_avg = (avg_res * tests_count + score) / (tests_count + 1)
-        user_profile.avg_result = new_avg
+        user_profile.avg_result = round(new_avg, 1)
         user_profile.testing_count = tests_count + 1
         user_profile.save()  # updating users average result and tests count
         return render(request, "exam_result.html",
