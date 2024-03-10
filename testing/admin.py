@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import Testing, Category, Question, Variant
+from .models import Testing, Category, Question, Variant, TestingQuestion
 
 
 @admin.register(Testing)
 class TestingAdmin(admin.ModelAdmin):
-    list_display = ('user', 'test_date', 'result', 'test_time', 'category')
-    list_filter = ('user', 'test_date', 'category')
+    list_display = ('user', 'test_datetime', 'result', 'test_duration', 'category')
+    list_filter = ('user', 'test_datetime', 'category')
 
 
 @admin.register(Category)
@@ -22,3 +22,9 @@ class QuestionAdmin(admin.ModelAdmin):
 @admin.register(Variant)
 class VariantAdmin(admin.ModelAdmin):
     list_display = ('id', 'var_text', 'is_right')
+
+
+@admin.register(TestingQuestion)
+class TestingQuestionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'testing_id', 'question', 'variant')
+    list_filter = ('testing_id',)

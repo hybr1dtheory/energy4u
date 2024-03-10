@@ -13,19 +13,26 @@ class Category(models.Model):
 # table to save every test results for all users
 class Testing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    test_date = models.DateField(auto_now_add=True)
-    result = models.FloatField()  # result of testing in percents
-    test_time = models.DurationField()  # time to solve the test
+    test_datetime = models.DateTimeField(auto_now_add=True)
+    result = models.FloatField(default=0.0)  # result of testing in percents
+    test_duration = models.DurationField(null=True)  # time to solve the test
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
+    class Meta:
+        get_latest_by = "test_datetime"
+        ordering = ["-test_datetime"]
+
     def __str__(self):
-        return f"user: {self.user}, date: {self.test_date}, result: {self.result}"
+        return f"user: {self.user}, date: {self.test_datetime}, result: {self.result}"
 
 
 class Question(models.Model):
     q_text = models.CharField(max_length=512)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     reference = models.CharField(max_length=32, default=None)  # reference to a regulatory act
+
+    class Meta:
+        ordering = ["?"]
 
     def __str__(self):
         return f"{self.q_text}"
@@ -47,4 +54,4 @@ class TestingQuestion(models.Model):
     with additional data about choice"""
     question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
     testing = models.ForeignKey(Testing, on_delete=models.CASCADE)
-    choice = models.ForeignKey(Variant, on_delete=models.SET_NULL, null=True)
+    variant = models.ForeignKey(Variant, on_delete=models.SET_NULL, null=True)  # choice for every question in testing

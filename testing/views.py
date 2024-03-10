@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-from .models import Question, Category
+from .models import Question, Category, Testing, TestingQuestion
 from random import randint
+from datetime import datetime
 
 
 def index(request):
@@ -36,10 +37,7 @@ def questions_list(request):
             request.session["answers"] = answers  # writing answers to user session data
             return HttpResponseRedirect("test_result")
     else:
-        q_ids = set()
-        while len(q_ids) < 10:  # generating 10 random id for questions set
-            q_ids.add(randint(1, 40))
-        questions = Question.objects.filter(id__in=q_ids)
+        questions = Question.objects.all()[:10]
         return render(request, 'questions.html',
                       {'questions_list': questions, 'selected': []})
 
@@ -76,7 +74,7 @@ def test_result(request):
 
 def one_quest(request):
     """Redirecting to random question"""
-    qid = randint(1, 40)
+    qid = randint(1, 60)
     return HttpResponseRedirect(f"{qid}")
 
 
@@ -136,24 +134,60 @@ def exam(request, category_id: int):
                 qid, vid = choice.split(":")
                 answers[qid] = vid
         request.session["exam_answers"] = answers  # writing answers to user session data
+        request.session["exam_category"] = category_id
+        request.session["exam_end"] = str(datetime.now())
         return HttpResponseRedirect("/exam/result")
     else:
         category = get_object_or_404(Category, pk=category_id)
-        questions_set = Question.objects.filter(category_id__lte=category.id)
-        if len(questions_set) > 10:
-            questions = []
-            indexes = set()
-            max_index = len(questions_set) - 1
-            while len(indexes) < 10:
-                indexes.add(randint(0, max_index))
-            for n in indexes:
-                questions.append(questions_set[n])
-        else:
-            questions = questions_set
+        questions = Question.objects.filter(category_id__lte=category.id)[:10]
+        request.session["exam_start"] = str(datetime.now())
         return render(request, 'exam.html',
                       {'questions_list': questions, 'selected': []})
 
 
 @login_required
 def exam_result(request):
-    pass
+    """View for getting results of the exam from user session
+        and to send results to results page"""
+    answers = request.session.get("exam_answers", False)  # get selected variants for all questions
+    if answers:
+        # creating data needed to save the result of the exam
+        questions_data = []
+        category_id = request.session.get("exam_category")
+        exam_start = request.session.get("exam_start")
+        exam_end = request.session.get("exam_end")
+        exam_duration = datetime.fromisoformat(exam_end) - datetime.fromisoformat(exam_start)
+        category = Category.objects.get(id=int(category_id))
+        score = 0
+        test = Testing(user=request.user, category=category, test_duration=exam_duration)
+        test.save()
+        for qid, vid in answers.items():
+            question = Question.objects.get(id=int(qid))
+            variants = question.variant_set.all()
+            choice = variants.get(id=int(vid))
+            user_answer = TestingQuestion(testing=test, question=question, variant=choice)
+            user_answer.save()
+            text = question.q_text
+            ref = question.reference
+            correct = variants.get(is_right=True).id
+            if correct == choice.id:
+                mess = "Правильна відповідь!"
+                score += 1
+            else:
+                mess = "Нажаль відповідь неправильна. Скористайтеся посиланням на нормативний акт."
+            q_data = {"choice": choice.id, "question": text,
+                      "variants": variants, "message": mess, "reference": ref}
+            questions_data.append(q_data)
+        score *= 10
+        test.result = score
+        test.save()  # updating testing instance to save test result to the DB
+        user_profile = request.user.profile
+        avg_res, tests_count = user_profile.avg_result, user_profile.testing_count
+        new_avg = (avg_res * tests_count + score) / (tests_count + 1)
+        user_profile.avg_result = new_avg
+        user_profile.testing_count = tests_count + 1
+        user_profile.save()  # updating users average result and tests count
+        return render(request, "exam_result.html",
+                      {"questions_data": questions_data, "score": score})
+    else:
+        return HttpResponseForbidden("Ви не відправили відповідь на цей тест.")

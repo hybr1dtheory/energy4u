@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from testing.models import Testing, TestingQuestion
 
 
 def register(request):
@@ -40,3 +41,11 @@ def profile(request):
     }
 
     return render(request, 'profile.html', context)
+
+
+@login_required
+def testing_history(request):
+    user_id = request.user.id
+    testings = Testing.objects.filter(user_id=user_id)
+    return render(request, 'testing_history.html', {"testings": testings})
+

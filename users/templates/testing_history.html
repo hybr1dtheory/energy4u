@@ -1,0 +1,30 @@
+{% extends "base_testing.html" %}
+
+{% block title %}Історія екзаменів: {{ user.username }} {% endblock %}
+{% block content %}
+<table>
+    <caption class="text-primary">
+        Історія екзаменів: {{ user.username }}
+    </caption>
+    <thead>
+        <tr>
+            <th scope="col">№</th>
+            <th scope="col">Дата і час</th>
+            <th scope="col">Результат, %</th>
+            <th scope="col">Час проходження, сек</th>
+            <th scope="col">Подробиці</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for test in testings %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ test.test_datetime }}</td>
+            <td>{{ test.result }}</td>
+            <td>{{ test.test_duration.seconds}}</td>
+            <td><a href="/profile/testings/{{ test.id }}">Подробиці</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

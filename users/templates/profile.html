@@ -14,6 +14,7 @@
         <ul>
             <li>Рейтинг: {{ user.profile.rating }}</li>
             <li>Середній результат: {{ user.profile.avg_result }}</li>
+            <li><a href="/profile/testings">Історія екзаменів</a></li>
         </ul>
       <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}
