@@ -1,0 +1,11 @@
+{% extends "base_testing.html" %}
+
+{% block title %}Підтвердити вихід{% endblock %}
+{% block content %}
+    <h5>Ви дійсно хочете вийти з облікового запису?</h5>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Так, вийти</button>
+    </form>
+    <a href="{% url 'index' %}">Ні, перейти на головну</a>
+{% endblock %}

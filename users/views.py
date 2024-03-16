@@ -18,6 +18,11 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
+def logout_confirm(request):
+    """View to show the logout confirmation page"""
+    return render(request, 'logout_confirm.html')
+
+
 @login_required
 def profile(request):
     if request.method == 'POST':
