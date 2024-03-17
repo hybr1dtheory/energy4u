@@ -26,5 +26,7 @@
         {% endif %}
     {% endfor %}
     </fieldset>
-<h6 class="text-danger">Пункт правил: {{ reference }}</h6>
+<h6>
+    <a class="text-danger" href="{{ ref_url }}">Пункт правил: {{ ref_name }}</a>
+</h6>
 {% endblock %}

@@ -29,7 +29,8 @@ class Testing(models.Model):
 class Question(models.Model):
     q_text = models.CharField(max_length=512)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    reference = models.CharField(max_length=32, default=None)  # reference to a regulatory act
+    ref_name = models.CharField(max_length=32, default=None)  # paragraph of the regulatory act
+    ref_url = models.URLField(max_length=256, null=True)  # url to a regulatory act
 
     class Meta:
         ordering = ["?"]

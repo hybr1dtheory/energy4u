@@ -15,7 +15,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'q_text', 'category', 'reference')
+    list_display = ('id', 'q_text', 'category', 'ref_name', 'ref_url')
     list_filter = ('category',)
 
 

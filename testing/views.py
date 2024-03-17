@@ -55,7 +55,7 @@ def test_result(request):
             choice = int(vid)
             variants = question.variant_set.all()
             text = question.q_text
-            ref = question.reference
+            ref = question.ref_name
             correct = variants.get(is_right=True).id
             if correct == choice:
                 mess = "Правильна відповідь!"
@@ -101,7 +101,8 @@ def result(request, question_id):
         question = get_object_or_404(Question, pk=question_id)
         variants = question.variant_set.all()
         text = question.q_text
-        ref = question.reference
+        ref_name = question.ref_name
+        ref_url = question.ref_url
         correct = [v.id for v in variants if v.is_right]
         choice = int(request.session["one_choice"])  # get selected variant from user request
         if choice in correct:
@@ -111,7 +112,8 @@ def result(request, question_id):
         del request.session["one_choice"]  # clean choice from session
         return render(request, "result.html",
                       {"choice": choice, "question": text,
-                       "variants": variants, "message": mess, "reference": ref})
+                       "variants": variants, "message": mess,
+                       "ref_name": ref_name, "ref_url": ref_url})
     else:
         return HttpResponseForbidden("Ви не відправили відповідь на це питання")
 
@@ -168,7 +170,7 @@ def exam_result(request):
             user_answer = TestingQuestion(testing=test, question=question, variant=choice)
             user_answer.save()
             text = question.q_text
-            ref = question.reference
+            ref = question.ref_name
             correct = variants.get(is_right=True).id
             if correct == choice.id:
                 mess = "Правильна відповідь!"
